@@ -5,13 +5,22 @@
  */
 
 #include <Arduino.h>
+#include <RoverArmMotor.h>
 
 #ifndef LED_BUILTIN
   #define LED_BUILTIN P13
 #endif
-TIM_TypeDef *Instance;
-HardwareTimer *MyTim;
-uint32_t channel;
+
+
+
+//TEST MOTOR
+#define WR_PWM PA0
+#define WR_ENCODER PC3 //ADC pin
+#define WR_DIR PC12
+RoverArmMotor Wrist_Roll(WR_PWM, WR_ENCODER, CYTRON, 5.0, 141.0, WR_DIR, 0);
+double aggKp=0.025, aggKi=0.019,  aggKd=0, elbaggKp=0.025, elbaggKi=0.019,  elbaggKd=0;
+double regKp=0.025, regKi=0.014, regKd=0, elbregKp=0.025, elbregKi=0.014,  elbregKd=0;
+uint8_t buffer[100];
 void setup()
 {
   // initialize LED digital pin as an output.
@@ -19,49 +28,28 @@ void setup()
   while (!Serial);
   pinMode(LED_BUILTIN, OUTPUT);
 
-  // TIMER CONFIG
-  pinMode(PA0, OUTPUT);
-  digitalWrite(PA0, LOW);
-  PinName pinNameToUse = digitalPinToPinName(PA0);
-  Instance = (TIM_TypeDef *)pinmap_peripheral(pinNameToUse, PinMap_PWM); // returns TIM2
-  MyTim = new HardwareTimer(Instance);
-  if (Instance != nullptr)
-  {
-    uint8_t timerIndex = get_timer_index(Instance);
-    // pin => 0, 1, etc
-    channel = STM_PIN_CHANNEL(pinmap_function( pinNameToUse, PinMap_PWM)); // returns 1 (CH1)
+  Wrist_Roll.begin(aggKp, aggKi, aggKd, regKp, regKi, regKd);
   
-    Serial.print(", Instance = 0x"); Serial.print( (uint32_t) Instance, HEX);
-    Serial.print(", channel = "); Serial.print(channel);
-    Serial.print(", TimerIndex = "); Serial.print(get_timer_index(Instance));
-    Serial.print(", PinName = "); Serial.println( pinNameToUse );
-    HardwareTimer *MyTim = new HardwareTimer(Instance);
-    MyTim->setPWM(channel, PA0, 1000, 20, nullptr, nullptr);
-    MyTim->resume();
 
-
-    //MANUAL setting
-    // MyTim->setMode(channel, TIMER_OUTPUT_COMPARE_PWM1, PA0);
-    // Serial.print(", Timer clock is ");Serial.print(MyTim->getTimerClkFreq()); // returns 80MHz
-    
-    // MyTim->setPrescaleFactor(1000);
-    
-    // // MyTim->setOverflow(5, HERTZ_FORMAT);
-    // MyTim->setCaptureCompare(channel, 20, PERCENT_COMPARE_FORMAT);
-  }
-
+  Wrist_Roll.newSetpoint((double) 170); // test angle 170 deg
   
 
 }
 
 void loop()
 {
+  // Wrist_Roll.adcResult = Wrist_Roll.internalAveragerInstance.reading(analogRead(Wrist_Roll.encoder));
+  // Wrist_Roll.currentAngle = Wrist_Roll.mapFloat((float) Wrist_Roll.adcResult, MIN_ADC_VALUE, MAX_ADC_VALUE, 0, 359.0f);
+  Serial.printf("adc result is %d\n", Wrist_Roll.adcResult);
+  Serial.print("current angle is ");
+  Serial.println(Wrist_Roll.currentAngle, 4); 
+  Serial.print("current setpoint is ");
+  Serial.println(Wrist_Roll.setpoint, 4); 
+  Wrist_Roll.tick();
   // turn the LED on (HIGH is the voltage level)
   digitalWrite(LED_BUILTIN, HIGH);
-  MyTim->setCaptureCompare(channel, 20, PERCENT_COMPARE_FORMAT);
-  delay(2000);
+  delay(50);
   // turn the LED off by making the voltage LOW
   digitalWrite(LED_BUILTIN, LOW);
-  MyTim->setCaptureCompare(channel, 40, PERCENT_COMPARE_FORMAT);
-  delay(2000);
+  delay(50);
 }
