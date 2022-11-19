@@ -8,7 +8,8 @@
 #include <RoverArmMotor.h>
 #include <Servo.h>
 #include <SPI.h>
-
+#include <AMT22_lib.h>
+// #include <encoder.h>
 
 #ifndef LED_BUILTIN
   #define LED_BUILTIN P13
@@ -37,6 +38,8 @@ uint8_t buffer[100];
 
 Servo WaistServo;
 
+AMT22 Wrist_Roll_Encoder(SPI1_SSEL, 14);
+// Encoder Wrist_Roll_Encoder((uint8_t)SPI1_SSEL);
 
 
 
@@ -77,7 +80,8 @@ void loop()
   // Serial.println(Waist.setpoint, 4); 
   // Waist.tick();
 
-
+//TEST Encoder
+  Serial.println(Wrist_Roll_Encoder.getPositionSPI());
 
 //TEST DC Motor
   analogWrite(Wrist_Roll.pwm, 50);

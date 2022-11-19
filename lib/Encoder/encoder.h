@@ -14,10 +14,12 @@ public:
 
     static void readEncoders(Encoder *encoder_list);
     static void resetEncoders(Encoder *encoder_list);
+    static unsigned int countSetBits(unsigned int n);
+
 private:
     uint8_t chip_select;
     static uint32_t receive_buf;
-    static boolean checkbit(uint16_t *input);
+    static bool checkbit(uint16_t *input);
     void calculatePosition();
     void calculateSpeed();
     float gearRatio;

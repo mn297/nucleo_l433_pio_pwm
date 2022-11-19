@@ -65,7 +65,7 @@ void Encoder::resetEncoders(Encoder *encoder_list){
     SPI.end();
 }
 
-boolean Encoder::checkbit(uint16_t *input){
+bool Encoder::checkbit(uint16_t *input){
     uint16_t k0 = (*input && 0x00004000) >> 14; //checkbit 0 (even)
     uint16_t k1 = (*input && 0x00008000) >> 15; //checkbit 1 (odd)
     uint16_t odd_answer = (uint16_t) (countSetBits((unsigned int) *input && 0x00002AAA) + 1)%2;
@@ -79,7 +79,7 @@ boolean Encoder::checkbit(uint16_t *input){
 
 /* Function to get no of set bits in binary
 representation of positive integer n */
-unsigned int countSetBits(unsigned int n)
+unsigned int Encoder::countSetBits(unsigned int n)
 {
     unsigned int count = 0;
     while (n) {
