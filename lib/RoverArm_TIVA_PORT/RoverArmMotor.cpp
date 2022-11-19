@@ -31,13 +31,15 @@ void RoverArmMotor::begin(double aggP, double aggI, double aggD, double regP, do
         pinMode(dir, OUTPUT);
         // Allow negative outputs, the sign will be interpreted as
         // the direction pin
-        internalPIDInstance.SetOutputLimits(0, 150); // can't write negative -50,50 to PWM
+        internalPIDInstance.SetOutputLimits(-100, 100); // max ADC write is 255 PWM mn297
     }
     else if(escType == BLUE_ROBOTICS){
          // BlueRobotics ESC uses a servo-like control scheme where
         // 1100us is full speed reverse and 1900us is full speed forward
-        internalPIDInstance.SetOutputLimits(1100, 1900);
-        internalServoInstance.attach(pwm);
+        internalPIDInstance.SetOutputLimits(1100, 1900); // 50Hz servo? mn297
+        // internalServoInstance.attach(pwm);
+        internalServoInstance.attach(pwm, 1100, 1900, 1500); // mn297
+
     }
     
     // Initialize moving averager
@@ -78,7 +80,7 @@ void RoverArmMotor::tick(){
     // Get current angle
     adcResult = internalAveragerInstance.reading(analogRead(encoder));
     // currentAngle = mapFloat((float) adcResult, MAX_ADC_VALUE, MIN_ADC_VALUE, 359.0f, 0.0f);
-    currentAngle = mapFloat((float) adcResult, MIN_ADC_VALUE, MAX_ADC_VALUE, 0, 359.0f);
+    currentAngle = mapFloat((float) adcResult, MIN_ADC_VALUE, MAX_ADC_VALUE, 0, 359.0f); //mn297 potentiometer encoder
 
       // Measurement deadband - ignore sub-degree noise
     if(abs(currentAngle - lastAngle) < 1.0){
@@ -126,10 +128,10 @@ void RoverArmMotor::tick(){
     if(escType == CYTRON){
 
         // Interpret sign of the error signal as the direction pin value
-        (gap > 0) ? digitalWrite(dir, HIGH) : digitalWrite(dir, LOW);
+        (gap > 0) ? digitalWrite(dir, HIGH) : digitalWrite(dir, LOW); // invert if needed mn297
 
         // Write to PWM pin
-        analogWrite(pwm, output); //mn297 function execute quickly and jumps to next tick()
+        analogWrite(pwm, abs(output)); //mn297 function execute quickly and jumps to next tick()
 
     }else if(escType == BLUE_ROBOTICS){
         // This one is more straightforward since we already defined the output range
