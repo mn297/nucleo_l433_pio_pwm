@@ -17,16 +17,23 @@
 #define RES12           12
 
 //STM32L433RC
-#define SPI1_MOSI PB15  //ARD_D11
-#define SPI1_MISO PB14  //ARD_D12
+#define SPI1_MOSI PB5  	//ARD_D4
+// #define SPI1_MOSI PA12  //ARD_D2
+#define SPI1_MISO PA11  //ARD_D10
 #define SPI1_SCLK PB3   //ARD_D3
 #define SPI1_SSEL PA15  //ARD_D5
+
+#define SPI2_MOSI PB15  //ARD_D11
+#define SPI2_MISO PB14  //ARD_D12
+#define SPI2_SCLK PB13  //ARD_D13
+#define SPI2_SSEL PB12  //no ARD
+
 
 class AMT22
 {
 public:
     AMT22(uint8_t cs, uint8_t resolution);
-    uint16_t getPositionSPI();
+	uint16_t getPositionSPI();
     void setZeroSPI();
     void resetAMT22();
     void setResolution(uint8_t resolution);
