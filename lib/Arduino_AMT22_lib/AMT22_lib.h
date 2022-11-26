@@ -37,6 +37,8 @@ public:
     void setZeroSPI();
     void resetAMT22();
     void setResolution(uint8_t resolution);
+    void setUpSPI(uint8_t mosi, uint8_t miso, uint8_t sclk, uint8_t clk_divider);
+    SPIClass* SPI_handler;
 
 
 private:

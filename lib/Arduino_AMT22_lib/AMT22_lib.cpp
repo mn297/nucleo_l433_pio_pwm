@@ -7,13 +7,32 @@
 
 
 
-SPIClass SPI_1(SPI1_MOSI,  SPI1_MISO,  SPI1_SCLK, SPI1_SSEL);
+// SPIClass SPI_1(SPI1_MOSI,  SPI1_MISO,  SPI1_SCLK, SPI1_SSEL);
 
 AMT22::AMT22(uint8_t cs, uint8_t resolution) {
+    SPI_handler = new SPIClass(SPI1_MOSI,  SPI1_MISO,  SPI1_SCLK, SPI1_SSEL);
+    // (*SPI_handler).setClockDivider(0);
+    (*SPI_handler).begin();
+    pinMode(cs, OUTPUT);
     digitalWrite(cs, HIGH);   //Get the CS line high which is the default inactive state
     _cs = cs;
     _resolution = resolution;
 }
+/*
+ * This function is not related to the AMT22 class. It allows to set up communication via SPI.
+ * It must be performed in the setup section of the Arduino main.
+ */
+// mn297 modified
+void AMT22::setUpSPI(uint8_t mosi, uint8_t miso, uint8_t sclk, uint8_t clk_divider){
+    pinMode(sclk, OUTPUT);
+    pinMode(mosi, OUTPUT);
+    pinMode(miso, INPUT);
+    (*SPI_handler).setClockDivider(clk_divider);
+    (*SPI_handler).begin();
+}
+
+
+
 
 /*
  * This function gets the absolute position from the AMT22 encoder using the SPI bus. The AMT22 position includes 2 checkbits to use
@@ -64,9 +83,12 @@ uint8_t AMT22::spiWriteRead(uint8_t sendByte, uint8_t releaseLine){
 
     //There is a minimum time requirement after CS goes low before data can be clocked out of the encoder.
     delayMicroseconds(3);
+    uint8_t dummy;
 
     //send the command
-    data = SPI_1.transfer(sendByte);
+    // data = (*SPI_handler).transfer(sendByte, SPI_CONTINUE); //mn297 changed from SPI_LAST
+    data = (*SPI_handler).transfer(sendByte); //mn297 changed from SPI_LAST
+
     delayMicroseconds(3); //There is also a minimum time after clocking that CS should remain asserted before we release it
     setCSLine(releaseLine); //if releaseLine is high set it high else it stays low
 
@@ -114,14 +136,4 @@ void AMT22::setResolution(uint8_t resolution) {
     _resolution = resolution;
 }
 
-/*
- * This function is not related to the AMT22 class. It allows to set up communication via SPI.
- * It must be performed in the setup section of the Arduino main.
- */
-void setUpSPI(uint8_t mosi, uint8_t miso, uint8_t sclk, uint8_t clk_divider){
-    pinMode(sclk, OUTPUT);
-    pinMode(mosi, OUTPUT);
-    pinMode(miso, INPUT);
-    SPI_1.setClockDivider(clk_divider);
-    SPI_1.begin();
-}
+

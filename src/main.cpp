@@ -25,10 +25,7 @@
 #define WAIST_PWM PA9  //ARD_D1
 #define WAIST_ENCODER PC3 // ARD_A2 pin
 
-#define SPI1_MOSI PB15  //ARD_D11
-#define SPI1_MISO PB14  //ARD_D12
-#define SPI1_SCLK PB3   //ARD_D3
-#define SPI1_SSEL PA15  //ARD_D5
+
 
 RoverArmMotor Wrist_Roll(WR_PWM, WR_ENCODER, CYTRON, 5.0, 141.0, WR_DIR, 0);  //mn297 setpoint always 73 cause 146/2
 RoverArmMotor Waist(WAIST_PWM, WAIST_ENCODER, BLUE_ROBOTICS, 5.0, 141.0, 0, 0);
@@ -60,6 +57,13 @@ void setup()
   WaistServo.attach(PA15);  // only needed if using servo
 
 
+  //SETUP ARM
+  // Wrist_Roll_Encoder.setUpSPI(SPI1_MOSI, SPI1_MISO, SPI1_SCLK, 0); // default clock div
+
+//TEST ENCODER
+  // Serial.println(Wrist_Roll_Encoder.getPositionSPI());
+
+
 }
 
 void loop()
@@ -82,6 +86,8 @@ void loop()
 
 //TEST Encoder
   Serial.println(Wrist_Roll_Encoder.getPositionSPI());
+  // delayMicroseconds(0);
+
 
 //TEST DC Motor
   analogWrite(Wrist_Roll.pwm, 50);
