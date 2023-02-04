@@ -20,7 +20,7 @@
 #define SPI1_MOSI PB5  	//ARD_D4
 // #define SPI1_MOSI PA12  //ARD_D2
 #define SPI1_MISO PA11  //ARD_D10
-#define SPI1_SCLK PB3   //ARD_D3
+#define SPI1_SCLK PA1   //ARD_A1
 #define SPI1_SSEL PA15  //ARD_D5
 
 #define SPI2_MOSI PB15  //ARD_D11
@@ -28,6 +28,10 @@
 #define SPI2_SCLK PB13  //ARD_D13
 #define SPI2_SSEL PB12  //no ARD
 
+#define SPI3_MOSI PC12  //
+#define SPI3_MISO PC11  //
+#define SPI3_SCLK PC10  //
+#define SPI3_SSEL PA9  //ARD_D1
 
 class AMT22
 {

@@ -1,6 +1,7 @@
 #include <PID_v1.h>
 #include <movingAvg.h>
 #include <Servo.h>
+#include <AMT22_lib.h>
 
 class RoverArmMotor{
 
@@ -17,7 +18,7 @@ class RoverArmMotor{
         #define FWD 1
         #define REV -1
 
-        RoverArmMotor(int pwm_pin, int encoder_pin, int esc_type, double minimum_angle, 
+        RoverArmMotor(int pwm_pin, AMT22* encoder_amt22, int esc_type, double minimum_angle, 
                       double maximum_angle, int dir_pin, int brake_pin);
 
         // Setters for various tunable parameters of our motors
@@ -46,6 +47,7 @@ class RoverArmMotor{
     private:
     public: // TESTING only
         // Default to open loop, will need to enter the coefficients to begin
+        AMT22* _encoder_amt22;
         PID internalPIDInstance;
         movingAvg internalAveragerInstance;
         Servo internalServoInstance;

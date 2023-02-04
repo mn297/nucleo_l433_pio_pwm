@@ -7,17 +7,19 @@
 // I'm very suspicious of the way I handled user defined pointers...
 
 // The motor will not move until begin() is called!
-RoverArmMotor::RoverArmMotor(int pwm_pin, int encoder_pin, int esc_type, double minimum_angle, double maximum_angle, int dir_pin, int brake_pin)
+RoverArmMotor::RoverArmMotor(int pwm_pin, AMT22* encoder_amt22, int esc_type, double minimum_angle, double maximum_angle, int dir_pin, int brake_pin)
                 :internalPIDInstance(&input, &output, &setpoint, regularKp, regularKi, regularKd, DIRECT)
                 ,internalAveragerInstance(15){
 
-    encoder = encoder_pin;
+    // encoder = encoder_pin;
+    _encoder_amt22 = encoder_amt22;
     lowestAngle = minimum_angle;
     highestAngle = maximum_angle;
     pwm = pwm_pin;
     dir = dir_pin;
     escType = esc_type;
     brake = brake_pin;
+
     
 }
 
@@ -50,7 +52,9 @@ void RoverArmMotor::begin(double aggP, double aggI, double aggD, double regP, do
 
     // Get current location and set it as setpoint. Essential to prevent jerkiness
     // as the microcontroller initializes.
-    adcResult = internalAveragerInstance.reading(analogRead(encoder));
+    // adcResult = internalAveragerInstance.reading(analogRead(encoder));  //mn297 new encoder
+    adcResult = (*_encoder_amt22).getPositionSPI();
+
     currentAngle = mapFloat((float) adcResult, MIN_ADC_VALUE, MAX_ADC_VALUE, 0, 359.0f);
     setpoint = currentAngle;
 

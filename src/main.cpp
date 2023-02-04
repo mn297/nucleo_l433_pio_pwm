@@ -18,7 +18,9 @@
 
 
 //TEST MOTOR
-#define WR_PWM PA0      //ARD_A0
+// #define WR_PWM PA0      //ARD_A0
+#define WR_PWM PB10         //ARD_D6
+
 #define WR_ENCODER PC3  //ARD_A2 ADC pin
 #define WR_DIR PC7      //ARD_D7
 
@@ -26,17 +28,19 @@
 #define WAIST_ENCODER PC3 // ARD_A2 pin
 
 
+AMT22 Wrist_Roll_Encoder(SPI1_SSEL, 12);
+// Encoder Wrist_Roll_Encoder((uint8_t)SPI1_SSEL);
 
-RoverArmMotor Wrist_Roll(WR_PWM, WR_ENCODER, CYTRON, 5.0, 141.0, WR_DIR, 0);  //mn297 setpoint always 73 cause 146/2
-RoverArmMotor Waist(WAIST_PWM, WAIST_ENCODER, BLUE_ROBOTICS, 5.0, 141.0, 0, 0);
+
+RoverArmMotor Wrist_Roll(WR_PWM, &Wrist_Roll_Encoder, CYTRON, 5.0, 141.0, WR_DIR, 0);  //mn297 setpoint always 73 cause 146/2
+// RoverArmMotor Waist(WAIST_PWM, nullptr, BLUE_ROBOTICS, 5.0, 141.0, 0, 0);
 double aggKp=0.025, aggKi=0.019,  aggKd=0, elbaggKp=0.025, elbaggKi=0.019,  elbaggKd=0;
 double regKp=0.025, regKi=0.014, regKd=0, elbregKp=0.025, elbregKi=0.014,  elbregKd=0;
 uint8_t buffer[100];
 
 Servo WaistServo;
 
-AMT22 Wrist_Roll_Encoder(SPI1_SSEL, 14);
-// Encoder Wrist_Roll_Encoder((uint8_t)SPI1_SSEL);
+
 
 
 
@@ -51,10 +55,13 @@ void setup()
   Wrist_Roll.begin(aggKp, aggKi, aggKd, regKp, regKi, regKd);
   Wrist_Roll.newSetpoint((double) 170); // test angle 170 deg
   
-  Waist.begin(aggKp, aggKi, aggKd, regKp, regKi, regKd);
-  Waist.newSetpoint((double) 170); // test angle 170 deg
 
-  WaistServo.attach(PA15);  // only needed if using servo
+
+  // ONLY FOR TESTING 3-PHASE mn297
+  // Waist.begin(aggKp, aggKi, aggKd, regKp, regKi, regKd);
+  // Waist.newSetpoint((double) 170); // test angle 170 deg
+  // WaistServo.attach(PA15);  // only needed if using servo
+
 
 
   //SETUP ARM
@@ -86,14 +93,14 @@ void loop()
 
 //TEST Encoder
   Serial.println(Wrist_Roll_Encoder.getPositionSPI());
-  // delayMicroseconds(0);
+  delayMicroseconds(100);
 
 
 //TEST DC Motor
-  analogWrite(Wrist_Roll.pwm, 50);
-  delay(1500);
-  analogWrite(Wrist_Roll.pwm, 0);
-  delay(1500);
+  // analogWrite(Wrist_Roll.pwm, 50);
+  // delay(1500);
+  // analogWrite(Wrist_Roll.pwm, 0);
+  // delay(1500);
   
 
 
